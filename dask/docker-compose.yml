@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+    scheduler:
+        build: .
+        image: dask:latest
+        ports:
+            - "${HOST_DASK_SCHEDULER_PORT}:${DASK_SCHEDULER_PORT}"
+            - "${HOST_DASK_SCHEDULER_DASHBOARD_PORT}:${DASK_SCHEDULER_DASHBOARD_PORT}"
+        entrypoint:
+            - dask-scheduler
+            - --port
+            - ${DASK_SCHEDULER_PORT}
+            - --dashboard-address
+            - ":${DASK_SCHEDULER_DASHBOARD_PORT}"
+    worker:
+        depends_on:
+            - scheduler
+        build: .
+        image: dask:latest
+        entrypoint:
+            - dask-worker
+            - "scheduler:${DASK_SCHEDULER_PORT}"
